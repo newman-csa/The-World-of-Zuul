@@ -15,10 +15,13 @@
  * @version 2016.02.29
  */
 
+ import java.util.HashMap;
+
 public class Game 
 {
     private Parser parser;
     private Room currentRoom;
+    private HashMap<String, Room> map;
         
     /**
      * Create the game and initialise its internal map.
@@ -68,7 +71,27 @@ public class Game
         
 
         currentRoom = auditoriumLobby;  // start game outside
+
+        // The Letters are the the colunms and the numbers the rows, just like algebraic notation
+        map = new HashMap<String, Room>();
+        map.put("a2", fortGreenePlace);
+        map.put("b1", toSouthWestEntrance);
+        map.put("b3", centerWestHallway);
+        map.put("b3", toNorthWestEntrance);
+        map.put("c1", auditorium);
+        map.put("c2", auditoriumLobby);
+        map.put("c3", murral);
+        map.put("d1", toSouthEastEntrance);
+        map.put("d2", centerEastHallway);
+        map.put("d3", toNorthEastEntrance);
+        map.put("e2", southEliot);
     }
+
+    private void printMap() {
+        for (String i : )
+          
+    }
+
 
     /**
      *  Main play routine.  Loops until end of play.
