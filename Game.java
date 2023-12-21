@@ -15,13 +15,13 @@
  * @version 2016.02.29
  */
 
- import java.util.HashMap;
+ import java.util.LinkedHashMap;
 
 public class Game 
 {
     private Parser parser;
     private Room currentRoom;
-    private HashMap<String, Room> map;
+    private LinkedHashMap<String, Room> map;
         
     /**
      * Create the game and initialise its internal map.
@@ -73,10 +73,10 @@ public class Game
         currentRoom = auditoriumLobby;  // start game outside
 
         // The Letters are the the colunms and the numbers the rows, just like algebraic notation
-        map = new HashMap<String, Room>();
+        map = new LinkedHashMap<String, Room>();
         map.put("a2", fortGreenePlace);
         map.put("b1", toSouthWestEntrance);
-        map.put("b3", centerWestHallway);
+        map.put("b2", centerWestHallway);
         map.put("b3", toNorthWestEntrance);
         map.put("c1", auditorium);
         map.put("c2", auditoriumLobby);
@@ -88,7 +88,9 @@ public class Game
     }
 
     private void printMap() {
-        for (String i : )
+        for (String i : map.keySet()) {
+            System.out.println(i + " : " + map.get(i));
+        }
           
     }
 
@@ -136,6 +138,7 @@ public class Game
             System.out.print("west ");
         }
         System.out.println();
+        printMap();
     }
 
     /**
@@ -231,6 +234,7 @@ public class Game
                 System.out.print("west ");
             }
             System.out.println();
+            printMap();
         }
     }
 
