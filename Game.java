@@ -46,7 +46,6 @@ public class Game {
         fortGreenePlace = new Room("outside center west on Fort Greene Place");
         toNorthWestEntrance = new Room("looking toward the north west entrance");
         toSouthWestEntrance = new Room("looking toward the south west entrance");
-        auditorium = new Room("Auditorium");
         toNorthEastEntrance = new Room("looking toward the north east entrance");
         toSouthEastEntrance = new Room("looking toward the south east entrance");
         southEliot = new Room("outside center east on South Elliot");
@@ -68,14 +67,17 @@ public class Game {
         toNorthEastEntrance.setExits(null, null, centerEastHallway, null);
         toSouthEastEntrance.setExits(centerEastHallway, null, null, null);
 
-        secretRoomBelowAuditorium.setExits(auditorium, toSouthEastEntrance, southEliot, toSouthWestEntrance);
+        auditorium.setExit("downstairs", secretRoomBelowAuditorium);
+        secretRoomBelowAuditorium.setExit("upstairs", auditorium);
 
         currentRoom = auditoriumLobby; // start game outside
 
         // The Letters are the the columns and the numbers the rows, just like algebraic
         // notation
         map = new LinkedHashMap<String, Room>();
+        map.put("a1", null);
         map.put("a2", fortGreenePlace);
+        map.put("a3", null);
         map.put("b1", toSouthWestEntrance);
         map.put("b2", centerWestHallway);
         map.put("b3", toNorthWestEntrance);
@@ -85,7 +87,9 @@ public class Game {
         map.put("d1", toSouthEastEntrance);
         map.put("d2", centerEastHallway);
         map.put("d3", toNorthEastEntrance);
+        map.put("e1", null);
         map.put("e2", southEliot);
+        map.put("e2", null);
     }
 
     private void printMap() {
@@ -96,8 +100,8 @@ public class Game {
     }
 
     private void printLocationInfo() {
-        System.out.println("you are " + currentRoom.getDescription());
-        System.out.print("You can go ");
+        System.out.println("You are " + currentRoom.getDescription());
+        System.out.print("You can go: ");
         System.out.print(currentRoom.getExitString());
         System.out.println();
     }
@@ -187,18 +191,7 @@ public class Game {
 
         // Try to leave current room.
         Room nextRoom = null;
-        if (direction.equals("north")) {
-            nextRoom = currentRoom.getExit("north");
-        }
-        if (direction.equals("east")) {
-            nextRoom = currentRoom.getExit("east");
-        }
-        if (direction.equals("south")) {
-            nextRoom = currentRoom.getExit("south");
-        }
-        if (direction.equals("west")) {
-            nextRoom = currentRoom.getExit("west");
-        }
+        nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
