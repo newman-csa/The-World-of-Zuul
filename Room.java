@@ -1,5 +1,4 @@
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Class Room - a room in an adventure game.
@@ -17,7 +16,7 @@ import java.util.Set;
  */
 public class Room {
     private String description;
-    private String name;
+    private Item roomItem;
     private HashMap<String, Room> exits;
 
     /**
@@ -27,14 +26,9 @@ public class Room {
      * 
      * @param description The room's description.
      */
-    public Room(String name, String description) {
-        this.name = name;
+    public Room(String description) {
         this.description = description;
         exits = new HashMap<String, Room>();
-    }
-
-    public Room(String description) {
-        this(null, description);
     }
 
     public Room getExit(String direction) {
@@ -68,6 +62,10 @@ public class Room {
 
     public void setExit(String direction, Room neighbor) {
         exits.put(direction, neighbor);
+    }
+
+    public void setRoomItem(Item roomItem) {
+        this.roomItem = roomItem;
     }
 
     /**

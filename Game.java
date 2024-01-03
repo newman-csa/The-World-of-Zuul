@@ -17,6 +17,7 @@
  */
 
 import java.util.LinkedHashMap;
+import java.util.function.ToDoubleFunction;
 
 public class Game {
     private Parser parser;
@@ -200,6 +201,9 @@ public class Game {
             printLocationInfo();
         }
     }
+
+    // TODO: Implement this
+    private void collectItem() {}
 
     /**
      * "Quit" was entered. Check the rest of the command to see
