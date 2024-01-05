@@ -1,4 +1,3 @@
-// TODO: Make this into an abstract class for differnt types of items.
 public class Item {
     private String name;
     private String description;

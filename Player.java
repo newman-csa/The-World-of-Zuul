@@ -7,8 +7,23 @@ public class Player {
         inventory = new ArrayList<Item>();
     }
 
+    public ArrayList<Item> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(ArrayList<Item> inventory) {
+        this.inventory = inventory;
+    }
+
+    public String getInventoryString() {
+        String outStr = "";
+        for (Item item : inventory) 
+            outStr += item.getName() + " " + item.getDescription() + "\n";
+        
+        return outStr;
+    }
+
     /**
-     * 
      * Adds Items to the player's inventory. If the player already has that item
      * do not store it and return false.
      * 
@@ -16,19 +31,25 @@ public class Player {
      * @return true if operation is successful; false if operation is not successful
      */
     public boolean addItemToInventory(Item itemToAdd) {
-        for (Item item : inventory) {
-            if (item.getName().equals(itemToAdd.getName())) return false;
-        }
+        for (Item item : inventory)
+            if (item.getName().equals(itemToAdd.getName()))
+                return false;
 
         inventory.add(itemToAdd);
         return true;
 
     }
 
+    /**
+     * Checks Inventory for if an item exist within it
+     * 
+     * @param itemName
+     * @return
+     */
     public boolean checkInInventory(String itemName) {
-        for (Item item : inventory) {
-            if (item.getName().equals(itemName)) return true;
-        }
+        for (Item item : inventory)
+            if (item.getName().equals(itemName))
+                return true;
 
         return false;
     }
@@ -40,7 +61,9 @@ public class Player {
      */
     public void removeItemInInventory(String itemName) {
         for (Item item : inventory) {
-            if (item.getName().equals(itemName)) inventory.remove(item);
+            if (item.getName().equals(itemName))
+                inventory.remove(item);
+
             break;
         }
     }

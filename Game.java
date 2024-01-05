@@ -17,12 +17,16 @@
  */
 
 import java.util.LinkedHashMap;
-import java.util.function.ToDoubleFunction;
 
 public class Game {
     private Parser parser;
     private Room currentRoom;
+    private Player player;
     private LinkedHashMap<String, Room> map;
+    private Room auditoriumLobby, centerWestHallway, centerEastHallway, fortGreenePlace,
+            auditorium, southEliot, mural, secretRoomBelowAuditorium;
+
+    private ExitRoom toNorthWestEntrance, toSouthWestEntrance, toNorthEastEntrance, toSouthEastEntrance;
 
     /**
      * Create the game and initialize its internal map.
@@ -30,35 +34,33 @@ public class Game {
     public Game() {
         createRooms();
         parser = new Parser();
+        player = new Player();
     }
 
     /**
      * Create all the rooms and link their exits together.
      */
     private void createRooms() {
-        Room auditoriumLobby, centerWestHallway, centerEastHallway, fortGreenePlace,
-                toNorthWestEntrance, toSouthWestEntrance, auditorium, toNorthEastEntrance,
-                toSouthEastEntrance, southEliot, mural, secretRoomBelowAuditorium;
 
         // create the rooms
         auditoriumLobby = new Room("in lobby outside the auditorium");
         centerWestHallway = new Room("in the center west hallway");
         centerEastHallway = new Room("in the center east hallway");
         fortGreenePlace = new Room("outside center west on Fort Greene Place");
-        toNorthWestEntrance = new Room("looking toward the north west entrance");
-        toSouthWestEntrance = new Room("looking toward the south west entrance");
-        toNorthEastEntrance = new Room("looking toward the north east entrance");
-        toSouthEastEntrance = new Room("looking toward the south east entrance");
         southEliot = new Room("outside center east on South Elliot");
         mural = new Room("at the mural in the lobby");
         auditorium = new Room("in the auditorium");
         secretRoomBelowAuditorium = new Room("secret room below the auditorium");
 
+        toNorthWestEntrance = new ExitRoom("looking toward the north west entrance");
+        toSouthWestEntrance = new ExitRoom("looking toward the south west entrance");
+        toNorthEastEntrance = new ExitRoom("looking toward the north east entrance");
+        toSouthEastEntrance = new ExitRoom("looking toward the south east entrance");
+
         // initialize room exits (north, east, south, west)
         auditoriumLobby.setExits(mural, centerEastHallway, auditorium, centerWestHallway);
         centerWestHallway.setExits(toNorthWestEntrance, auditoriumLobby, toSouthWestEntrance, fortGreenePlace);
         centerEastHallway.setExits(toNorthEastEntrance, southEliot, toSouthEastEntrance, auditoriumLobby);
-
         fortGreenePlace.setExits(null, centerWestHallway, null, null);
         toNorthWestEntrance.setExits(null, null, centerWestHallway, null);
         toSouthWestEntrance.setExits(centerWestHallway, null, null, null);
@@ -71,10 +73,15 @@ public class Game {
         auditorium.setExit("downstairs", secretRoomBelowAuditorium);
         secretRoomBelowAuditorium.setExit("upstairs", auditorium);
 
+        Item key = new Item("key", "Can be used to unlock a door");
+
+        secretRoomBelowAuditorium.setRoomItem(key);
+
         currentRoom = auditoriumLobby; // start game outside
 
         // The Letters are the the columns and the numbers the rows, just like algebraic
         // notation
+        // TODO: put this in private function
         map = new LinkedHashMap<String, Room>();
         map.put("a1", null);
         map.put("a2", fortGreenePlace);
@@ -101,7 +108,11 @@ public class Game {
     }
 
     private void printLocationInfo() {
+        System.out.println();
         System.out.println("You are " + currentRoom.getDescription());
+        if (currentRoom.getRoomItem() != null) {
+            System.out.println("You can take: " + currentRoom.getRoomItem().getName());
+        }
         System.out.print("You can go: ");
         System.out.print(currentRoom.getExitString());
         System.out.println();
@@ -157,6 +168,10 @@ public class Game {
             goRoom(command);
         } else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
+        } else if (commandWord.equals("take")) {
+            takeItem(command);
+        } else if (commandWord.equals("use")) {
+            useItem(command);
         }
 
         return wantToQuit;
@@ -174,7 +189,7 @@ public class Game {
         System.out.println("around at the university.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit help");
+        System.out.println("   go quit use take help");
     }
 
     /**
@@ -192,10 +207,28 @@ public class Game {
 
         // Try to leave current room.
         Room nextRoom = null;
-        nextRoom = currentRoom.getExit(direction);
+
+        // Cast nextRoom from Room → ExitRoom if room is exit
+        if (currentRoom.getExit(direction) instanceof ExitRoom) {
+            nextRoom = (ExitRoom) currentRoom.getExit(direction);
+        } else {
+            nextRoom = currentRoom.getExit(direction);
+        }
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
+        } else if (nextRoom == southEliot || nextRoom == fortGreenePlace) {
+            if (((ExitRoom) currentRoom).isDoorOpened() == false) {
+                System.out.println("The door outside is locked!");
+            } else {
+                System.out.println("_-_-_YOU  WIN!_-_-_");
+                System.exit(21);
+            }
+
+        } else if (nextRoom instanceof ExitRoom) {
+            currentRoom = (ExitRoom) nextRoom;
+            printLocationInfo();
+
         } else {
             currentRoom = nextRoom;
             printLocationInfo();
@@ -203,7 +236,46 @@ public class Game {
     }
 
     // TODO: Implement this
-    private void collectItem() {}
+    private void takeItem(Command command) {
+        if (!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to take...
+            System.out.println("Take what?");
+            return;
+        }
+
+        String itemName = command.getSecondWord();
+
+        if (currentRoom.getRoomItem() == null) {
+            System.out.println("There is no item in this room");
+        } else if (currentRoom.getRoomItem().getName() == itemName) {
+            System.out.println("This room has no " + itemName);
+        } else if (player.checkInInventory(itemName)) {
+            System.out.println("You already have a " + itemName);
+        } else {
+            System.out.println("A " + itemName + " has been added to your inventory");
+            player.addItemToInventory(currentRoom.getRoomItem());
+        }
+    }
+
+    private void useItem(Command command) {
+        if (!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to use...
+            System.out.println("Use what?");
+            return;
+        } else if (!(currentRoom instanceof ExitRoom)) {
+            System.out.println("There is nothing to an item on");
+            return;
+        }
+
+        String itemName = command.getSecondWord();
+
+        if (!(player.checkInInventory(itemName))) {
+            System.out.println("You do not have a " + itemName);
+        } else {
+            ((ExitRoom) currentRoom).unlockDoor(player);
+            System.out.println("You have unlocked the exit door!");
+        }
+    }
 
     /**
      * "Quit" was entered. Check the rest of the command to see

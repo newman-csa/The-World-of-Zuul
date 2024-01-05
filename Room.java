@@ -1,3 +1,5 @@
+// TODO: Make a proper decorate pattern for this class
+// See: ExampleDecoratorPattern.md
 import java.util.HashMap;
 
 /**
@@ -16,7 +18,7 @@ import java.util.HashMap;
  */
 public class Room {
     private String description;
-    private Item roomItem;
+    private Item roomItem = null;
     private HashMap<String, Room> exits;
 
     /**
@@ -68,10 +70,17 @@ public class Room {
         this.roomItem = roomItem;
     }
 
+    public Item getRoomItem() {
+        return roomItem;
+    }
+
     /**
      * @return The description of the room.
      */
     public String getDescription() {
+        if (roomItem != null) {
+            return description + "\n" + "This Room has a " + roomItem.getName();
+        }
         return description;
     }
 
