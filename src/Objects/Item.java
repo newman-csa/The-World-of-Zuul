@@ -1,20 +1,22 @@
+package src.Objects;
+
 public class Item {
     private String name;
     private String description;
 
-    public Item (String name, String description) {
+    public Item(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public Item (String name) {
+    public Item(String name) {
         this(name, null);
     }
 
     public String getDescription() {
         return description;
     }
-    
+
     public String getName() {
         return name;
     }

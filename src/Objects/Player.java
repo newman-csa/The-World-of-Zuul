@@ -1,3 +1,5 @@
+package src.Objects;
+
 import java.util.ArrayList;
 
 public class Player {
@@ -17,9 +19,9 @@ public class Player {
 
     public String getInventoryString() {
         String outStr = "";
-        for (Item item : inventory) 
+        for (Item item : inventory)
             outStr += item.getName() + " " + item.getDescription() + "\n";
-        
+
         return outStr;
     }
 

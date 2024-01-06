@@ -1,3 +1,5 @@
+package src.Utils;
+
 import java.util.Scanner;
 
 /**

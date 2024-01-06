@@ -1,3 +1,4 @@
+package src;
 
 /**
  *  This class is the main class of the "World of Zuul" application. 
@@ -17,6 +18,13 @@
  */
 
 import java.util.LinkedHashMap;
+
+import src.Objects.Item;
+import src.Objects.Player;
+import src.Rooms.ExitRoom;
+import src.Rooms.Room;
+import src.Utils.Command;
+import src.Utils.Parser;
 
 public class Game {
     private Parser parser;
@@ -207,10 +215,11 @@ public class Game {
 
         // Try to leave current room.
         Room nextRoom = null;
+        ExitRoom nextExitRoom = null;
 
         // Cast nextRoom from Room → ExitRoom if room is exit
         if (currentRoom.getExit(direction) instanceof ExitRoom) {
-            nextRoom = (ExitRoom) currentRoom.getExit(direction);
+            nextExitRoom = (ExitRoom) currentRoom.getExit(direction);
         } else {
             nextRoom = currentRoom.getExit(direction);
         }

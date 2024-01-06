@@ -1,3 +1,7 @@
+package src.Rooms;
+
+import src.Objects.Player;
+
 public class ExitRoom extends Room {
     private boolean doorOpened = false;
 

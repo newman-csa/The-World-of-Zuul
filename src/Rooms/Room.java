@@ -1,6 +1,10 @@
+package src.Rooms;
+
 // TODO: Make a proper decorate pattern for this class
-// See: ExampleDecoratorPattern.md
+// See: ExampleDecoratorPattern.txt
 import java.util.HashMap;
+
+import src.Objects.Item;
 
 /**
  * Class Room - a room in an adventure game.
