@@ -21,7 +21,8 @@ import java.util.LinkedHashMap;
 
 import src.Objects.Item;
 import src.Objects.Player;
-import src.Rooms.ExitRoom;
+import src.Rooms.BasicRoom;
+import src.Rooms.ExitRoomDecorator;
 import src.Rooms.Room;
 import src.Utils.Command;
 import src.Utils.Parser;
@@ -31,10 +32,13 @@ public class Game {
     private Room currentRoom;
     private Player player;
     private LinkedHashMap<String, Room> map;
+    
+    // Basic Rooms
     private Room auditoriumLobby, centerWestHallway, centerEastHallway, fortGreenePlace,
             auditorium, southEliot, mural, secretRoomBelowAuditorium;
 
-    private ExitRoom toNorthWestEntrance, toSouthWestEntrance, toNorthEastEntrance, toSouthEastEntrance;
+    // ExitRooms
+    private Room toNorthWestEntrance, toSouthWestEntrance, toNorthEastEntrance, toSouthEastEntrance;
 
     /**
      * Create the game and initialize its internal map.
@@ -51,19 +55,21 @@ public class Game {
     private void createRooms() {
 
         // create the rooms
-        auditoriumLobby = new Room("in lobby outside the auditorium");
-        centerWestHallway = new Room("in the center west hallway");
-        centerEastHallway = new Room("in the center east hallway");
-        fortGreenePlace = new Room("outside center west on Fort Greene Place");
-        southEliot = new Room("outside center east on South Elliot");
-        mural = new Room("at the mural in the lobby");
-        auditorium = new Room("in the auditorium");
-        secretRoomBelowAuditorium = new Room("secret room below the auditorium");
+        auditoriumLobby = new BasicRoom("in lobby outside the auditorium");
+        fortGreenePlace = new BasicRoom("outside center west on Fort Greene Place");
+        southEliot = new BasicRoom("outside center east on South Elliot");
+        mural = new BasicRoom("at the mural in the lobby");
+        auditorium = new BasicRoom("in the auditorium");
+        toNorthWestEntrance = new BasicRoom("looking toward the north west entrance");
+        toSouthWestEntrance = new BasicRoom("looking toward the south west entrance");
+        toNorthEastEntrance = new BasicRoom("looking toward the north east entrance");
+        toSouthEastEntrance = new BasicRoom("looking toward the south east entrance");
+        Item key = new Item("key", "Can be used to unlock a door");
+        secretRoomBelowAuditorium = new BasicRoom(key, "secret room below the auditorium");
 
-        toNorthWestEntrance = new ExitRoom("looking toward the north west entrance");
-        toSouthWestEntrance = new ExitRoom("looking toward the south west entrance");
-        toNorthEastEntrance = new ExitRoom("looking toward the north east entrance");
-        toSouthEastEntrance = new ExitRoom("looking toward the south east entrance");
+        // create exit rooms
+        centerWestHallway = new ExitRoomDecorator(new BasicRoom("in the center west hallway"));
+        centerEastHallway = new ExitRoomDecorator(new BasicRoom("in the center east hallway"));
 
         // initialize room exits (north, east, south, west)
         auditoriumLobby.setExits(mural, centerEastHallway, auditorium, centerWestHallway);
@@ -80,10 +86,6 @@ public class Game {
 
         auditorium.setExit("downstairs", secretRoomBelowAuditorium);
         secretRoomBelowAuditorium.setExit("upstairs", auditorium);
-
-        Item key = new Item("key", "Can be used to unlock a door");
-
-        secretRoomBelowAuditorium.setRoomItem(key);
 
         currentRoom = auditoriumLobby; // start game outside
 
@@ -214,28 +216,20 @@ public class Game {
         String direction = command.getSecondWord();
 
         // Try to leave current room.
-        Room nextRoom = null;
-        ExitRoom nextExitRoom = null;
-
-        // Cast nextRoom from Room → ExitRoom if room is exit
-        if (currentRoom.getExit(direction) instanceof ExitRoom) {
-            nextExitRoom = (ExitRoom) currentRoom.getExit(direction);
-        } else {
-            nextRoom = currentRoom.getExit(direction);
-        }
+        Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
             System.out.println("There is no door!");
-        } else if (nextRoom == southEliot || nextRoom == fortGreenePlace) {
-            if (((ExitRoom) currentRoom).isDoorOpened() == false) {
+        } else if (currentRoom instanceof ExitRoomDecorator && nextRoom == southEliot || nextRoom == fortGreenePlace) {
+            if (((ExitRoomDecorator) currentRoom).isDoorOpened() == false) {
                 System.out.println("The door outside is locked!");
             } else {
-                System.out.println("_-_-_YOU  WIN!_-_-_");
+                System.out.println("\n_-_-_YOU  WIN!_-_-_");
                 System.exit(21);
             }
 
-        } else if (nextRoom instanceof ExitRoom) {
-            currentRoom = (ExitRoom) nextRoom;
+        } else if (nextRoom instanceof ExitRoomDecorator) {
+            currentRoom = (ExitRoomDecorator) nextRoom;
             printLocationInfo();
 
         } else {
@@ -244,7 +238,6 @@ public class Game {
         }
     }
 
-    // TODO: Implement this
     private void takeItem(Command command) {
         if (!command.hasSecondWord()) {
             // if there is no second word, we don't know what to take...
@@ -271,8 +264,8 @@ public class Game {
             // if there is no second word, we don't know what to use...
             System.out.println("Use what?");
             return;
-        } else if (!(currentRoom instanceof ExitRoom)) {
-            System.out.println("There is nothing to an item on");
+        } else if (!(currentRoom instanceof ExitRoomDecorator)) {
+            System.out.println("There is nothing to use an item on");
             return;
         }
 
@@ -281,7 +274,7 @@ public class Game {
         if (!(player.checkInInventory(itemName))) {
             System.out.println("You do not have a " + itemName);
         } else {
-            ((ExitRoom) currentRoom).unlockDoor(player);
+            ((ExitRoomDecorator) currentRoom).unlockDoor(player);
             System.out.println("You have unlocked the exit door!");
         }
     }

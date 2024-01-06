@@ -1,45 +1,22 @@
 package src.Rooms;
 
-// TODO: Make a proper decorate pattern for this class
-// See: ExampleDecoratorPattern.txt
-import java.util.HashMap;
-
 import src.Objects.Item;
 
-/**
- * Class Room - a room in an adventure game.
- *
- * This class is part of the "World of Zuul" application.
- * "World of Zuul" is a very simple, text based adventure game.
- *
- * A "Room" represents one location in the scenery of the game. It is
- * connected to other rooms via exits. The exits are labelled north,
- * east, south, west. For each direction, the room stores a reference
- * to the neighboring room, or null if there is no exit in that direction.
- * 
- * @author Michael Kölling and David J. Barnes
- * @version 2016.02.29
- */
-public class Room {
-    private String description;
-    private Item roomItem = null;
-    private HashMap<String, Room> exits;
+public interface Room {
 
     /**
-     * Create a room described "description". Initially, it has
-     * no exits. "description" is something like "a kitchen" or
-     * "an open court yard".
-     * 
-     * @param description The room's description.
+     * @return The description of the room.
      */
-    public Room(String description) {
-        this.description = description;
-        exits = new HashMap<String, Room>();
-    }
+    public String getDescription();
 
-    public Room getExit(String direction) {
-        return exits.get(direction);
-    }
+
+    public String getExitString();
+
+
+    public Room getExit(String direction);
+
+
+    public void setExit(String direction, Room neighbor);
 
     /**
      * Define the exits of this room. Every direction either leads
@@ -50,50 +27,9 @@ public class Room {
      * @param south The south exit.
      * @param west  The west exit.
      */
-    public void setExits(Room north, Room east, Room south, Room west) {
-        if (north != null) {
-            exits.put("north", north);
-        }
-        if (east != null) {
-            exits.put("east", east);
-        }
-        if (south != null) {
-            exits.put("south", south);
-        }
-        if (west != null) {
-            exits.put("west", west);
-        }
+    public void setExits(Room north, Room east, Room south, Room west);
 
-    }
 
-    public void setExit(String direction, Room neighbor) {
-        exits.put(direction, neighbor);
-    }
-
-    public void setRoomItem(Item roomItem) {
-        this.roomItem = roomItem;
-    }
-
-    public Item getRoomItem() {
-        return roomItem;
-    }
-
-    /**
-     * @return The description of the room.
-     */
-    public String getDescription() {
-        if (roomItem != null) {
-            return description + "\n" + "This Room has a " + roomItem.getName();
-        }
-        return description;
-    }
-
-    public String getExitString() {
-        String returnString = "";
-        for (String exit : exits.keySet()) {
-            returnString += " " + exit;
-        }
-        return returnString;
-    }
+    public Item getRoomItem();
 
 }
