@@ -182,6 +182,8 @@ public class Game {
             takeItem(command);
         } else if (commandWord.equals("use")) {
             useItem(command);
+        } else if (commandWord.equals("print")) {
+            printStats(command);
         }
 
         return wantToQuit;
@@ -257,6 +259,8 @@ public class Game {
             System.out.println("A " + itemName + " has been added to your inventory");
             player.addItemToInventory(currentRoom.getRoomItem());
         }
+        // TODO: Make it so if you pick a word that we don't know print some message saying so 
+        // Something is wrong here
     }
 
     private void useItem(Command command) {
@@ -278,6 +282,30 @@ public class Game {
             System.out.println("You have unlocked the exit door!");
         }
     }
+    
+    private void printStats(Command command) {
+        if (!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to print...
+            System.out.println("Print what?");
+            System.out.println("Type \"print help\n for commands");
+            return;
+        }
+
+        String toPrint = command.getSecondWord();
+
+        if(toPrint == "help") {
+            
+        } else if(toPrint == "map") {
+            
+        } else if(toPrint == "inventory") {
+            
+        } else {
+            System.out.println("You can't print " + toPrint);
+        }
+
+    }
+
+    
 
     /**
      * "Quit" was entered. Check the rest of the command to see
