@@ -12,10 +12,10 @@ public class BasicRoom implements Room {
     /**
      * Create a room described "description". Initially, it has
      * no exits. "description" is something like "a kitchen" or
-     * "an open court yard". an item can something like a key 
+     * "an open court yard". an item can something like a key
      * which the player can pick up.
      * 
-     * @param roomItem An item inside of the room
+     * @param roomItem    An item inside of the room
      * @param description The room's description.
      */
     public BasicRoom(Item roomItem, String description) {

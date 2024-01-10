@@ -9,12 +9,9 @@ public interface Room {
      */
     public String getDescription();
 
-
     public String getExitString();
 
-
     public Room getExit(String direction);
-
 
     public void setExit(String direction, Room neighbor);
 
@@ -28,7 +25,6 @@ public interface Room {
      * @param west  The west exit.
      */
     public void setExits(Room north, Room east, Room south, Room west);
-
 
     public Item getRoomItem();
 

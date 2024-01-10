@@ -46,7 +46,7 @@ public class Player {
      * Checks Inventory for if an item exist within it
      * 
      * @param itemName
-     * @return
+     * @return true if item is found in inventory false otherwise
      */
     public boolean checkInInventory(String itemName) {
         for (Item item : inventory)

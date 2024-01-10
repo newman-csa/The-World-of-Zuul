@@ -110,6 +110,7 @@ public class Game {
         map.put("e2", null);
     }
 
+    // TODO: Implement this
     private void printMap() {
         for (String i : map.keySet()) {
             System.out.println(i + " : " + map.get(i));
@@ -278,6 +279,14 @@ public class Game {
             System.out.println("You have unlocked the exit door!");
         }
     }
+
+    /**
+     * TODO: Implement this and maps
+     * Can be used to statistics about the player such as what is in their
+     * inventory or a map of the current game.
+     * @param command
+     */
+    private void viewStats(Command command) {}
 
     /**
      * "Quit" was entered. Check the rest of the command to see
