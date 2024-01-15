@@ -1,5 +1,7 @@
 package src;
 
+import java.util.HashMap;
+
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -31,8 +33,8 @@ public class Game {
     private Parser parser;
     private Room currentRoom;
     private Player player;
-    private LinkedHashMap<String, Room> map;
-    
+    private LinkedHashMap<Room, String> map;
+
     // Basic Rooms
     private Room auditoriumLobby, centerWestHallway, centerEastHallway, fortGreenePlace,
             auditorium, southEliot, mural, secretRoomBelowAuditorium;
@@ -92,41 +94,40 @@ public class Game {
         // The Letters are the the columns and the numbers the rows, just like algebraic
         // notation
         // TODO: put this in private function
-        map = new LinkedHashMap<String, Room>();
-        map.put("a1", null);
-        map.put("a2", fortGreenePlace);
-        map.put("a3", null);
-        map.put("b1", toSouthWestEntrance);
-        map.put("b2", centerWestHallway);
-        map.put("b3", toNorthWestEntrance);
-        map.put("c1", auditorium);
-        map.put("c2", auditoriumLobby);
-        map.put("c3", mural);
-        map.put("d1", toSouthEastEntrance);
-        map.put("d2", centerEastHallway);
-        map.put("d3", toNorthEastEntrance);
-        map.put("e1", null);
-        map.put("e2", southEliot);
-        map.put("e2", null);
-    }
+        // map = new LinkedHashMap<Room, String>();
+        // map.put(null, "1a");
+        // map.put(fortGreenePlace, "2a");
+        // map.put(null, "3a");
+        // map.put(toSouthWestEntrance, "1b");
+        // map.put(centerWestHallway, "2b");
+        // map.put(toNorthWestEntrance, "3b");
+        // map.put(auditorium, "1c");
+        // map.put(auditoriumLobby, "2c");
+        // map.put(mural, "3c");
+        // map.put(toSouthEastEntrance, "1d");
+        // map.put(centerEastHallway, "2d");
+        // map.put(toNorthEastEntrance, "3d");
+        // map.put(null, "1e");
+        // map.put(southEliot, "2e");
+        // map.put(null, "3e");
 
-    // TODO: Implement this
-    private void printMap() {
-        for (String i : map.keySet()) {
-            System.out.println(i + " : " + map.get(i));
-        }
+        map = new LinkedHashMap<Room, String>();
+        map.put(null, "a3");
+        map.put(toSouthWestEntrance, "b3");
+        map.put(auditorium, "c3");
+        map.put(toSouthEastEntrance, "d3");
+        map.put(null, "e3");
+        map.put(fortGreenePlace, "a2");
+        map.put(centerWestHallway, "b2");
+        map.put(auditoriumLobby, "c2");
+        map.put(centerEastHallway, "d2");
+        map.put(southEliot, "e2");
+        map.put(null, "a1");
+        map.put(toNorthWestEntrance, "b1");
+        map.put(mural, "c1");
+        map.put(toNorthEastEntrance, "d1");
+        map.put(null, "e1");
 
-    }
-
-    private void printLocationInfo() {
-        System.out.println();
-        System.out.println("You are " + currentRoom.getDescription());
-        if (currentRoom.getRoomItem() != null) {
-            System.out.println("You can take: " + currentRoom.getRoomItem().getName());
-        }
-        System.out.print("You can go: ");
-        System.out.print(currentRoom.getExitString());
-        System.out.println();
     }
 
     /**
@@ -144,6 +145,42 @@ public class Game {
             finished = processCommand(command);
         }
         System.out.println("Thank you for playing.  Good bye.");
+    }
+
+    private void printMap() {
+        String out = "";
+        String subOut = "";
+
+        int count = 0;
+        for (Room room : map.keySet()) {
+            count++;
+
+            if (room == currentRoom && room != null) {
+                subOut += "Ｘ";
+            } else {
+                subOut += "Ｏ";
+
+            }
+
+            if (count == 4) {
+                count = 0;
+                out = subOut + "\n" + out;
+                subOut = "";
+            }
+        }
+        System.out.println(out);
+
+    }
+
+    private void printLocationInfo() {
+        System.out.println();
+        System.out.println("You are " + currentRoom.getDescription());
+        if (currentRoom.getRoomItem() != null) {
+            System.out.println("You can take: " + currentRoom.getRoomItem().getName());
+        }
+        System.out.print("You can go: ");
+        System.out.print(currentRoom.getExitString());
+        System.out.println();
     }
 
     /**
@@ -183,8 +220,8 @@ public class Game {
             takeItem(command);
         } else if (commandWord.equals("use")) {
             useItem(command);
-        } else if (commandWord.equals("print")) {
-            printStats(command);
+        } else if (commandWord.equals("show")) {
+            showStats(command);
         }
 
         return wantToQuit;
@@ -202,7 +239,7 @@ public class Game {
         System.out.println("around at the university.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit use take help");
+        System.out.println("   go quit use take show help");
     }
 
     /**
@@ -260,7 +297,8 @@ public class Game {
             System.out.println("A " + itemName + " has been added to your inventory");
             player.addItemToInventory(currentRoom.getRoomItem());
         }
-        // TODO: Make it so if you pick a word that we don't know print some message saying so 
+        // TODO: Make it so if you pick a word that we don't know print some message
+        // saying so
         // Something is wrong here
     }
 
@@ -283,38 +321,45 @@ public class Game {
             System.out.println("You have unlocked the exit door!");
         }
     }
-    
-    private void printStats(Command command) {
-        if (!command.hasSecondWord()) {
-            // if there is no second word, we don't know what to print...
-            System.out.println("Print what?");
-            System.out.println("Type \"print help\n for commands");
-            return;
-        }
-
-        String toPrint = command.getSecondWord();
-
-        if(toPrint == "help") {
-            
-        } else if(toPrint == "map") {
-            
-        } else if(toPrint == "inventory") {
-            
-        } else {
-            System.out.println("You can't print " + toPrint);
-        }
-
-    }
-
-    
 
     /**
      * TODO: Implement this and maps
      * Can be used to statistics about the player such as what is in their
      * inventory or a map of the current game.
+     * 
      * @param command
      */
-    private void viewStats(Command command) {}
+    private void showStats(Command command) {
+        System.out.println();
+        if (!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to print...
+            System.out.println("Show what?");
+            System.out.println("Type \"show help\n for commands");
+            return;
+        }
+
+        String toShow = command.getSecondWord();
+
+        if (toShow.equals("help")) {
+            System.out.println("Your command words for show are:");
+            System.out.println("inventory map help");
+        } else if (toShow.equals("map")) {
+            printMap();
+        } else if (toShow.equals("inventory")) {
+            printInventory();
+        } else {
+            System.out.println("You can't show " + toShow);
+        }
+
+    }
+
+    private void printInventory() {
+        System.out.print("You have: ");
+        for (Item item : player.getInventory()) {
+            System.out.print(item.getName() + " ");
+        }
+        System.out.println();
+    }
 
     /**
      * "Quit" was entered. Check the rest of the command to see
